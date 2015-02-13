@@ -1,0 +1,56 @@
+---
+- name: Instance DigitalOcean Media Server
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+  # Start Ubuntu_14.04_x64 in ny3 on 2Gb
+  - digital_ocean: >
+        state=present
+        command=droplet
+        name={{ domain }}-media
+        size_id=62
+        region_id=8
+        image_id=9801950 
+        wait_timeout=500
+        private_networking=yes
+        ssh_key_ids=685156
+        client_id=d6ed0c2657a7945a240e31934d56a866
+        api_key=15fa777e0687f7834251af0cabadc7b7
+    register: new_droplet
+  - add_host: name={{ new_droplet.droplet.ip_address }} groups=just_created do_id={{ new_droplet.droplet.id }} 
+  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=5 search_regex=OpenSSH
+  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=45 search_regex=OpenSSH
+# primary server setup
+- name: Server Deployment
+  hosts: just_created
+  tasks:
+  # setup virtual memory
+  - command: mkdir /var/swap
+  - command: fallocate -l 4G /var/swap/swapfile.1
+  - command: chmod 600 /var/swap/swapfile.1
+  - command: mkswap /var/swap/swapfile.1
+  - command: swapon /var/swap/swapfile.1
+
+  # refresh and update
+  - apt: update_cache=yes
+  - apt: upgrade=dist
+  # - apt: name=virtualenv state=present
+  - apt: name=apache2 state=present
+  # - apt: name=libapache2-mod-wsgi state=present
+  - apt: name=memcached state=present
+  - apt: name=s3cmd state=present
+  # setup s3 config
+  #- copy: src=templates/media/home.s3cfg dest=/root/.s3cfg owner=root group=root mode=400
+  # create destination directories
+  - command: mkdir /var/www/html/images/
+  # check connection
+  #- command: s3cmd ls 
+  # copy buckets from s3 in parallel
+  #- command: screen -S {{ item }} -d -m s3cmd get --recursive s3://{{ item }}/ /var/www/html/{{ item }}/
+  #  with_items: buckets
+  # rename some particularly bad ones later...
+  # - command: mv /var/www/html/sportsbettingmate.pdf.storage.bucket /var/www/html/sportsbettingmate/
+  # - command: mv /var/www/html/elasticbeanstalk-ap-southeast-2-409116743516 /var/www/html/elasticbeanstalk/
+  # restart apache
+  # - service: name=apache2 state=restarted
