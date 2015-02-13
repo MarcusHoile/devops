@@ -21,6 +21,7 @@
   - add_host: name={{ new_droplet.droplet.ip_address }} groups=just_created do_id={{ new_droplet.droplet.id }} 
   - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=5 search_regex=OpenSSH
   - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=45 search_regex=OpenSSH
+  - command: ssh-keygen -f "/root/.ssh/known_hosts" -R {{ new_droplet.droplet.ip_address }}
 # primary server setup
 - name: Server Deployment
   hosts: just_created
