@@ -14,7 +14,7 @@
         image_id=9801950 
         wait_timeout=500
         private_networking=yes
-        ssh_key_ids=685156
+        ssh_key_ids=685177
         client_id=d6ed0c2657a7945a240e31934d56a866
         api_key=15fa777e0687f7834251af0cabadc7b7
     register: new_droplet
