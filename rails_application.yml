@@ -193,7 +193,7 @@
       - nginx
 
   - name: insert env vars
-    copy: src=devops/templates/product-distribution/.env dest=/etc/environment
+    copy: src=templates/product-distribution/.env dest=/etc/environment
 
   - name: Detect rvm binary
     stat: path='{{ rvm1_rvm }}'
