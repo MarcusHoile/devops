@@ -43,6 +43,7 @@
 
 - name: Setup virtual memory
   hosts: just_created
+  sudo: yes
   tasks:
   - command: mkdir /var/swap
   - command: fallocate -l 4G /var/swap/swapfile.1
@@ -53,6 +54,7 @@
 # connect to the new host and start deployment    
 - name: Database Deployment
   hosts: just_created
+  sudo: yes
   tasks:
   # add postgres key and repo
   - apt_key: url=http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc state=present
