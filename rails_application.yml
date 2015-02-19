@@ -192,11 +192,8 @@
       - memcached
       - nginx
 
-  - name: setup git config
-    copy: src=product-distribution/install.gitconfig dest=/root/.gitconfig
-
   - name: insert env vars
-    copy: src=templates/product-distribution/install.env dest=/etc/environment
+    copy: src=devops/templates/product-distribution/.env dest=/etc/environment
 
   - name: Detect rvm binary
     stat: path='{{ rvm1_rvm }}'
