@@ -1,0 +1,142 @@
+---
+
+- name: Create log directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path="/var/www/approsport/shared/log"
+
+- name: Create pids directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path="/var/www/approsport/shared/pids"
+
+- name: Get release timestamp
+  command: date +%Y%m%d%H%M%S
+  register: timestamp
+
+- name: Name release directory
+  command: echo "/var/www/approsport/releases/{{ timestamp.stdout }}"
+  register: release_path
+
+- name: Create release directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path={{ release_path.stdout }}
+
+- name: checkout git repo into release directory
+  git: repo=git@github.com:H2HPredictor/Approsport.git
+       dest="{{ release_path.stdout }}"
+       accept_hostkey=yes
+       version=master
+
+- name: setup unicorn config
+  sudo: yes
+  shell: "ln -nfs {{ release_path.stdout }}/config/nginx.conf /etc/nginx/sites-enabled/approsport"
+
+- name: setup nginx config
+  sudo: yes
+  shell: "ln -nfs {{ release_path.stdout }}/config/unicorn_init.sh /etc/init.d/unicorn_approsport"
+
+- name: delete default vhost
+  sudo: yes
+  action: file path=/etc/nginx/sites-enabled/default state=absent
+  when: new_app
+
+- name: restart nginx
+  sudo: yes
+  service: name=nginx state=restarted
+  when: new_app
+
+- name: update unicorn defaults
+  sudo: yes
+  command: update-rc.d -f unicorn_approsport defaults
+  when: new_app
+
+- name: Setup memcached
+  sudo: yes
+  shell: "ln -nfs {{ release_path.stdout }}/config/memcached.conf /etc/memcached.conf"
+
+- name: Restart memcache
+  sudo: yes
+  service: name=memcached state=restarted
+
+- name: create shared config directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path=/var/www/approsport/shared/config
+
+- name: create tmp in release directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path="{{ release_path.stdout }}/tmp"
+
+- name: update database config
+  copy: >
+    src=templates/approsport/database.yml
+    dest="{{ release_path.stdout }}/config"
+
+- name: link database config
+  sudo: no
+  file: >
+    state=link
+    src="{{ release_path.stdout }}/config/database.yml"
+    path=/var/www/approsport/shared/config/database.yml
+
+- name: link log directory
+  sudo: no
+  file: >
+    state=link
+    path="{{ release_path.stdout }}/log"
+    src="/var/www/approsport/shared/log"
+    
+
+- name: link pids directory
+  sudo: no
+  file: >
+    state=link
+    path="{{ release_path.stdout }}/pids"
+    src="/var/www/approsport/shared/pids"
+    
+
+- name: install dependencies
+  shell: cd {{ release_path.stdout }}; bundle install
+  sudo: no
+
+- name: assets precompile
+  shell: cd {{ release_path.stdout }}; bundle exec rake assets:precompile --trace RAILS_ENV=production
+  sudo: no
+
+- name: Update app version
+  file: >
+    state=link
+    path=/var/www/approsport/current
+    src={{ release_path.stdout }}
+
+- name: restart unicorn
+  tags: restart
+  sudo: yes
+  service: name=unicorn_approsport state=restarted
+  
+- name: pause
+  tags: restart
+  pause: seconds=5
+
+- name: restart nginx
+  tags: restart
+  sudo: yes
+  service: name=nginx state=restarted
