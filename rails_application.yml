@@ -9,7 +9,7 @@
     digital_ocean: >
         state=present
         command=droplet
-        name='{{ domain }}-web
+        name='{{ domain }}-web'
         size_id=66
         region_id=8
         image_id=9801950 
