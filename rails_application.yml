@@ -281,7 +281,7 @@
 
 
 - name: Setup rails for production environment with unicorn and nginx
-  hosts: product_distribution
+  hosts: just_created
   gather_facts: false
   tags: 
     - rails
