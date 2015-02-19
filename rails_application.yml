@@ -66,13 +66,13 @@
   # refresh and update
   - apt: update_cache=yes
   - apt: upgrade=dist 
-
+  - apt: name=python-psycopg2 state=present
   # postgres and utilities
   - apt: name=postgresql-9.3 state=present
   - apt: name=postgresql-client-9.3 state=present
   - apt: name=postgresql-contrib-9.3 state=present
   #- apt: name=postgres-xc state=present
-  # - apt: name=python-psycopg2 state=present
+  
 
 # reconnect as postgres for database setup
 - name: Postgres Setup
