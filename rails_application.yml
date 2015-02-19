@@ -300,7 +300,7 @@
     - rails
 
 - name: Update rails core apps
-  hosts: core_apps
+  hosts: rails_web
   gather_facts: false
   tags: 
     - update
