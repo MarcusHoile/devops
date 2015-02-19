@@ -46,7 +46,7 @@
     add_host: name="{{ new_droplet.droplet.ip_address }}" groups=just_created do_id={{ new_droplet.droplet.id }} 
 
   - debug: msg="droplet {{ new_droplet.droplet.id }} ip {{ new_droplet.droplet.ip_address }}"
-  
+
   - name: add host group if it doesnt exist
     lineinfile:
       dest=/etc/ansible/hosts
@@ -83,35 +83,18 @@
       repo='deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' 
       state=present 
       validate_certs=no
+
   # refresh and update
-  - apt: upgrade=dist update_cache=yes
-  # ruby dependancies
-  - apt: name=wget state=present
-  - apt: name=build-essential state=present
-  - apt: name=libcurl4-openssl-dev state=present
-  - apt: name=python-dev state=present
-  - apt: name=python-setuptools state=present
-  - apt: name=python-software-properties state=present
-  - apt: name=software-properties-common state=present
-  - apt: name=nodejs state=present
-  - apt: name=libreadline-dev state=present
-  - apt: name=zlib1g-dev state=present
-  - apt: name=flex state=present
-  - apt: name=bison state=present
-  - apt: name=libxml2-dev state=present
-  - apt: name=libxslt1-dev state=present
-  - apt: name=libssl-dev state=present
-  - apt: name=imagemagick state=present
-  - apt: name=libpq-dev state=present
+  - apt: update_cache=yes
+  - apt: upgrade=dist 
+
   # postgres and utilities
   - apt: name=postgresql-9.3 state=present
   - apt: name=postgresql-client-9.3 state=present
   - apt: name=postgresql-contrib-9.3 state=present
   #- apt: name=postgres-xc state=present
-  - apt: name=python-psycopg2 state=present
-  # webserver and supervisor
-  - apt: name=nginx state=present
-  - apt: name=supervisor state=present
+  # - apt: name=python-psycopg2 state=present
+
 # reconnect as postgres for database setup
 - name: Postgres Setup
   hosts: just_created
@@ -211,10 +194,6 @@
   tasks:
   # install a private key as root's identity, to give this new machine access to everything else
   # - copy: src=digitalocean.pem dest=/root/.ssh/id_rsa owner=root group=root mode=400
-
-  # refresh and update
-  - apt: update_cache=yes
-  - apt: upgrade=dist 
 
   - name: install apps and dependencies on server
     apt: name={{ item }} state=present
