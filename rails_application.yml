@@ -46,6 +46,12 @@
     add_host: name="{{ new_droplet.droplet.ip_address }}" groups=just_created do_id={{ new_droplet.droplet.id }} 
 
   - debug: msg="droplet {{ new_droplet.droplet.id }} ip {{ new_droplet.droplet.ip_address }}"
+  
+  - name: add host group if it doesnt exist
+    lineinfile:
+      dest=/etc/ansible/hosts
+      line='\[{{ group_list.stdout }}\]'
+      state=present
 
   - name: Add new droplet to inventory file on ansible server and to appropriate groups
     tags: update_groups
