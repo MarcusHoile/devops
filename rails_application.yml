@@ -22,8 +22,10 @@
 
   - name: add host
     add_host: name="{{ new_droplet.droplet.ip_address }}" groups=just_created do_id={{ new_droplet.droplet.id }} 
-
-  - debug: msg="droplet {{ new_droplet.droplet.id }} ip {{ new_droplet.droplet.ip_address }}"
+  
+  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=5 search_regex=OpenSSH
+  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=25 search_regex=OpenSSH
+  - command: ssh-keygen -f "/root/.ssh/known_hosts" -R {{ new_droplet.droplet.ip_address }}
 
   - name: add host group if it doesnt exist
     lineinfile:
@@ -38,10 +40,6 @@
       insertafter='\[rails_web\]'
       line='{{ new_droplet.droplet.ip_address }}'
       state=present
-  
-  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=5 search_regex=OpenSSH
-  - local_action: wait_for host="{{ new_droplet.droplet.ip_address }}" port=22 delay=25 search_regex=OpenSSH
-  - command: ssh-keygen -f "/root/.ssh/known_hosts" -R {{ new_droplet.droplet.ip_address }}
 
 - name: Setup virtual memory
   hosts: just_created
