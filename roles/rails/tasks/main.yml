@@ -89,6 +89,7 @@
   copy: >
     src=templates/product_distribution/database.yml
     dest="{{ release_path.stdout }}/config"
+  when: new_droplet.droplet.ip_address != 0
 
 - name: link database config
   sudo: no
