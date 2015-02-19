@@ -91,11 +91,11 @@
     dest="{{ release_path.stdout }}/config"
   ignore_errors: yes
 
-- name: update database config
-  copy: >
-    src=database.yml
-    dest="{{ release_path.stdout }}/config"
-  ignore_errors: yes
+# - name: update database config
+#   copy: >
+#     src=database.yml
+#     dest="{{ release_path.stdout }}/config"
+#   ignore_errors: yes
 
 - name: link database config
   sudo: no
