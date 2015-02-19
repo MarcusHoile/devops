@@ -284,6 +284,7 @@
   hosts: just_created
   gather_facts: false
   tags: 
+    -rails
     - core_app
   vars:
     ruby_version: '2.1.4'

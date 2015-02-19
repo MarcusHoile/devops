@@ -6,7 +6,7 @@
     owner=root
     group=root
     recurse=yes
-    path="/var/www/approsport/shared/log"
+    path="/var/www/product_distribution/shared/log"
 
 - name: Create pids directory
   file: >
@@ -14,14 +14,14 @@
     owner=root
     group=root
     recurse=yes
-    path="/var/www/approsport/shared/pids"
+    path="/var/www/product_distribution/shared/pids"
 
 - name: Get release timestamp
   command: date +%Y%m%d%H%M%S
   register: timestamp
 
 - name: Name release directory
-  command: echo "/var/www/approsport/releases/{{ timestamp.stdout }}"
+  command: echo "/var/www/product_distribution/releases/{{ timestamp.stdout }}"
   register: release_path
 
 - name: Create release directory
@@ -33,18 +33,18 @@
     path={{ release_path.stdout }}
 
 - name: checkout git repo into release directory
-  git: repo=git@github.com:H2HPredictor/Approsport.git
+  git: repo=git@github.com:H2HPredictor/product_distribution.git
        dest="{{ release_path.stdout }}"
        accept_hostkey=yes
        version=master
 
 - name: setup unicorn config
   sudo: yes
-  shell: "ln -nfs {{ release_path.stdout }}/config/nginx.conf /etc/nginx/sites-enabled/approsport"
+  shell: "ln -nfs {{ release_path.stdout }}/config/nginx.conf /etc/nginx/sites-enabled/product_distribution"
 
 - name: setup nginx config
   sudo: yes
-  shell: "ln -nfs {{ release_path.stdout }}/config/unicorn_init.sh /etc/init.d/unicorn_approsport"
+  shell: "ln -nfs {{ release_path.stdout }}/config/unicorn_init.sh /etc/init.d/unicorn_product_distribution"
 
 - name: delete default vhost
   sudo: yes
@@ -58,7 +58,7 @@
 
 - name: update unicorn defaults
   sudo: yes
-  command: update-rc.d -f unicorn_approsport defaults
+  command: update-rc.d -f unicorn_product_distribution defaults
   when: new_app
 
 - name: Setup memcached
@@ -75,7 +75,7 @@
     owner=root
     group=root
     recurse=yes
-    path=/var/www/approsport/shared/config
+    path=/var/www/product_distribution/shared/config
 
 - name: create tmp in release directory
   file: >
@@ -87,7 +87,7 @@
 
 - name: update database config
   copy: >
-    src=templates/approsport/database.yml
+    src=templates/product_distribution/database.yml
     dest="{{ release_path.stdout }}/config"
 
 - name: link database config
@@ -95,14 +95,14 @@
   file: >
     state=link
     src="{{ release_path.stdout }}/config/database.yml"
-    path=/var/www/approsport/shared/config/database.yml
+    path=/var/www/product_distribution/shared/config/database.yml
 
 - name: link log directory
   sudo: no
   file: >
     state=link
     path="{{ release_path.stdout }}/log"
-    src="/var/www/approsport/shared/log"
+    src="/var/www/product_distribution/shared/log"
     
 
 - name: link pids directory
@@ -110,7 +110,7 @@
   file: >
     state=link
     path="{{ release_path.stdout }}/pids"
-    src="/var/www/approsport/shared/pids"
+    src="/var/www/product_distribution/shared/pids"
     
 
 - name: install dependencies
@@ -124,13 +124,13 @@
 - name: Update app version
   file: >
     state=link
-    path=/var/www/approsport/current
+    path=/var/www/product_distribution/current
     src={{ release_path.stdout }}
 
 - name: restart unicorn
   tags: restart
   sudo: yes
-  service: name=unicorn_approsport state=restarted
+  service: name=unicorn_product_distribution state=restarted
   
 - name: pause
   tags: restart
