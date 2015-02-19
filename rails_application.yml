@@ -55,8 +55,8 @@
   hosts: just_created
   sudo: yes
   tasks:
-  - copy: src=templates/pd.id_rsa dest=/.ssh/id_rsa
-  - copy: src=templates/pd.id_rsa.pub dest=/.ssh/id_rsa.pub
+  - copy: src=templates/pd.id_rsa dest=.ssh/id_rsa
+  - copy: src=templates/pd.id_rsa.pub dest=.ssh/id_rsa.pub
 
 # connect to the new host and start deployment    
 - name: Database Deployment
