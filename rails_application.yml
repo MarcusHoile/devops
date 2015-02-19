@@ -37,7 +37,7 @@
     tags: update_groups
     lineinfile:
       dest=/etc/ansible/hosts
-      insertafter='\[rails_web\]'
+      insertafter='[rails_web]'
       line='{{ new_droplet.droplet.ip_address }}'
       state=present
 
@@ -281,7 +281,7 @@
 
 
 - name: Setup rails for production environment with unicorn and nginx
-  hosts: just_created
+  hosts: product_distribution
   gather_facts: false
   tags: 
     - rails

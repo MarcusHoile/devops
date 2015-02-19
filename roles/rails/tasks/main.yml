@@ -33,7 +33,7 @@
     path={{ release_path.stdout }}
 
 - name: checkout git repo into release directory
-  git: repo=git@github.com:H2HPredictor/product_distribution.git
+  git: repo=git@github.com:MarcusHoile/product_distribution.git
        dest="{{ release_path.stdout }}"
        accept_hostkey=yes
        version=master
