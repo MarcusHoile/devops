@@ -122,6 +122,10 @@
   shell: cd {{ release_path.stdout }}; bundle exec rake assets:precompile --trace RAILS_ENV=production
   sudo: no
 
+- name: run migrations
+  shell: cd {{ release_path.stdout }}; bundle exec rake db:migrate RAILS_ENV=production
+  sudo: no
+
 - name: Update app version
   file: >
     state=link
@@ -131,11 +135,7 @@
 - name: restart unicorn
   tags: restart
   sudo: yes
-  service: name=unicorn_product_distribution state=restarted
-  
-- name: pause
-  tags: restart
-  pause: seconds=5
+  shell: service unicorn_product_distribution restart
 
 - name: restart nginx
   tags: restart
