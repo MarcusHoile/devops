@@ -87,7 +87,7 @@
 
 - name: update database config
   copy: >
-    src=templates/production-distribution/database.yml
+    src=templates/product-distribution/database.yml
     dest="{{ release_path.stdout }}/config"
 
 - name: link database config
