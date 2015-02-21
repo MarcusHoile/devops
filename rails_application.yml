@@ -100,6 +100,7 @@
       objs=public
       roles=rails
       grant_option=yes
+  - lineinfile: dest=/etc/postgresql/9.3/main/postgresql.conf line="listen_addresses = 'localhost'" insertafter="listen_addresses" state=present
   - shell: service postgresql restart
 
 # connect to the new host and start deployment    
@@ -281,7 +282,14 @@
   - name: setup git
     copy: src=templates/gitconfig dest=/root/.gitconfig
 
+- name: Create alias to navigate to application directory
+  hosts: just_created
+  tasks:
+  - name: create alias file
+    file: path=/root/.bash_aliases owner=root  state=touch mode=0644
 
+  - name: Setup alias to go to application directory
+    shell: echo 'alias cdapp="cd /var/www/product_distribution/"' >> ~/.bash_aliases
 
 - name: Setup rails for production environment with unicorn and nginx
   hosts: just_created
