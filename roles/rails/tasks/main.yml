@@ -100,6 +100,7 @@
 - name: link log directory
   sudo: no
   file: >
+    force=yes
     state=link
     path="{{ release_path.stdout }}/log"
     src="/var/www/product_distribution/shared/log"
