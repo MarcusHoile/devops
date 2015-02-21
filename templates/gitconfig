@@ -1,0 +1,10 @@
+[user]
+  name = marcushoile
+  email = marcus.hoile@gmail.com
+[color]
+  ui = auto
+[core]
+  editor = subl -n -w
+[filter "media"]
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f

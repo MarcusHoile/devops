@@ -56,7 +56,6 @@
   sudo: yes
   tasks:
   - copy: src=templates/pd.id_rsa dest=.ssh/id_rsa owner=root group=root mode=400
-  - copy: src=templates/pd.id_rsa.pub dest=.ssh/id_rsa.pub owner=root group=root mode=400
 
 # connect to the new host and start deployment    
 - name: Database Deployment
@@ -284,6 +283,9 @@
 
   - name: install bundler
     shell: gem install bundler
+
+  - name: setup git
+    copy: src=templates/gitconfig dest=/root/.gitconfig
 
 
 
