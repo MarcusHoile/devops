@@ -37,7 +37,7 @@
     tags: update_groups
     lineinfile:
       dest=/etc/ansible/hosts
-      insertafter='[rails_web]'
+      insertafter='rails_web'
       line='{{ new_droplet.droplet.ip_address }}'
       state=present
 
@@ -55,7 +55,7 @@
   hosts: just_created
   sudo: yes
   tasks:
-  - copy: src=templates/pd.id_rsa dest=.ssh/id_rsa owner=root group=root mode=400
+  - copy: src=templates/digitalocean.pem dest=.ssh/id_rsa owner=root group=root mode=400
 
 # connect to the new host and start deployment    
 - name: Database Deployment
