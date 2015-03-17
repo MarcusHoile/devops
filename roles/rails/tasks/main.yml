@@ -77,6 +77,14 @@
     recurse=yes
     path=/var/www/product_distribution/shared/config
 
+- name: create shared uploads directory
+  file: >
+    state=directory
+    owner=root
+    group=root
+    recurse=yes
+    path=/var/www/product_distribution/shared/uploads
+
 - name: create tmp in release directory
   file: >
     state=directory
@@ -116,6 +124,7 @@
 - name: link uploads directory
   sudo: no
   file: >
+    force=yes
     state=link
     path="{{ release_path.stdout }}/public/uploads"
     src="/var/www/product_distribution/shared/uploads"
