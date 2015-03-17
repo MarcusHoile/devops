@@ -126,8 +126,8 @@
   file: >
     force=yes
     state=link
-    src="{{ release_path.stdout }}/public/uploads"
-    path="/var/www/product_distribution/shared/uploads"
+    path="{{ release_path.stdout }}/public/uploads"
+    src="/var/www/product_distribution/shared/uploads"
     
 - name: install dependencies
   shell: cd {{ release_path.stdout }}; bundle install
