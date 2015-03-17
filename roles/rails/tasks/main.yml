@@ -112,8 +112,14 @@
     state=link
     path="{{ release_path.stdout }}/pids"
     src="/var/www/product_distribution/shared/pids"
-    
 
+- name: link uploads directory
+  sudo: no
+  file: >
+    state=link
+    path="{{ release_path.stdout }}/public/uploads"
+    src="/var/www/product_distribution/shared/uploads"
+    
 - name: install dependencies
   shell: cd {{ release_path.stdout }}; bundle install
   sudo: no
