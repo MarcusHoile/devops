@@ -123,7 +123,7 @@
 
 - name: link uploads directory
   sudo: no
-  command: ln -nfs /var/www/product_distribution/shared/uploads {{ release_path.stdout }}/public/uploads
+  command: ln -nfs /var/www/product_distribution/shared/uploads {{ release_path.stdout }}/public
     
 - name: install dependencies
   shell: cd {{ release_path.stdout }}; bundle install
