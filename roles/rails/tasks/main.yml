@@ -51,6 +51,9 @@
   action: file path=/etc/nginx/sites-enabled/default state=absent
   when: new_app
 
+- name: insert env vars
+  copy: src=templates/product-distribution/secrets.yml dest="{{ release_path.stdout }}/config/secrets.yml"
+
 - name: restart nginx
   sudo: yes
   service: name=nginx state=restarted

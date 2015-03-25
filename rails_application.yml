@@ -193,9 +193,6 @@
       - memcached
       - nginx
 
-  - name: insert env vars
-    copy: src=templates/product-distribution/.env dest=/etc/environment
-
   - name: Detect rvm binary
     stat: path='{{ rvm1_rvm }}'
     register: rvm_binary
@@ -375,7 +372,7 @@
       chdir: "{{ release_path.stdout | default('product-distribution') }}"
 
 - name: Clean up releases keep to 5
-  hosts: rails
+  hosts: rails_web
   tags: 
     - update
   tasks:
