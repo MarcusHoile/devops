@@ -353,7 +353,7 @@
       - update
     shell: RAILS_ENV={{ env | default('production') }} screen -d -m -S livescoresListener ruby lib/message_queue.rb -d
     args:
-      chdir: "{{ release_path.stdout | default('product-distribution') }}"
+      chdir: "{{ release_path.stdout | default('product_distribution') }}"
 
 
 - name: restart delayed job
@@ -369,7 +369,7 @@
   - name: restart delayed job  
     shell: RAILS_ENV={{ env | default('production') }} bin/delayed_job restart 
     args:
-      chdir: "{{ release_path.stdout | default('product-distribution') }}"
+      chdir: "{{ release_path.stdout | default('product_distribution') }}"
 
 - name: Clean up releases keep to 5
   hosts: rails_web
@@ -378,7 +378,7 @@
   tasks:
   # get the amount of old releases 
   - name: get release count
-    shell: ls /var/www/product-distribution/releases | wc -l
+    shell: ls /var/www/product_distribution/releases | wc -l
     register: release_count
     changed_when: false
 
@@ -386,6 +386,6 @@
   - name: remove old releases
     sudo: yes
     when: release_count.stdout|int >= 5
-    shell: cutoff=`ls -t /var/www/product-distribution/releases/ | head -5 | tail -1`; find /var/www/product-distribution/releases -maxdepth 1 ! -newer /var/www/product-distribution/releases/$cutoff -exec rm -rf '{}' \;
+    shell: cutoff=`ls -t /var/www/product_distribution/releases/ | head -5 | tail -1`; find /var/www/product_distribution/releases -maxdepth 1 ! -newer /var/www/product_distribution/releases/$cutoff -exec rm -rf '{}' \;
     
 
