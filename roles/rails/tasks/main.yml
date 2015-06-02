@@ -52,7 +52,7 @@
   when: new_app
 
 - name: insert env vars
-  copy: src=templates/planndit/secrets.yml dest="{{ release_path.stdout }}/config/secrets.yml"
+  copy: src=templates/secrets/planndit.yml dest="{{ release_path.stdout }}/config/secrets.yml"
 
 - name: restart nginx
   sudo: yes

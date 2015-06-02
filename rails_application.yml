@@ -109,12 +109,12 @@
   sudo: yes
   tags: create_droplet
   vars:
-    # ruby_version: '2.1.4'
+    # ruby_version: '2.2.0'
     # ruby_path: /opt/rubies/ruby-{{ ruby_version }}/bin
     git_branch: 'master'
     # Install 1 or more versions of ruby
     rvm1_rubies:
-      - 'ruby-2.1.4'
+      - 'ruby-2.2.0'
     
     # Delete a specific version of ruby (ie. ruby-2.1.0)
     rvm1_delete_ruby:
@@ -295,7 +295,7 @@
     - rails
     - core_app
   vars:
-    ruby_version: '2.1.4'
+    ruby_version: '2.2.0'
     new_app: true
   roles:
     - rails
@@ -306,7 +306,7 @@
   tags: 
     - update
   vars:
-    ruby_version: '2.1.4'
+    ruby_version: '2.2.0'
     new_app: false
   roles:
     - rails
