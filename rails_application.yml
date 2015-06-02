@@ -82,7 +82,7 @@
   tasks:
   # create databases
   - postgresql_db: >
-      name=product_distribution_production  
+      name=planndit_production  
       encoding='UTF-8'      
   # set admin password, create rails user, grant privileges
   - postgresql_user: > 
@@ -93,7 +93,7 @@
       password=Pr0duct
       role_attr_flags=SUPERUSER
   - postgresql_privs: >
-      database=product_distribution_production
+      database=planndit_production
       state=present
       privs=ALL
       type=schema
@@ -286,7 +286,7 @@
     file: path=/root/.bash_aliases owner=root  state=touch mode=0644
 
   - name: Setup alias to go to application directory
-    shell: echo 'alias cdapp="cd /var/www/product_distribution/"' >> ~/.bash_aliases
+    shell: echo 'alias cdapp="cd /var/www/planndit/"' >> ~/.bash_aliases
 
 - name: Setup rails for production environment with unicorn and nginx
   hosts: just_created
@@ -310,66 +310,6 @@
     new_app: false
   roles:
     - rails
- 
-
-- name: Setup rails app for service instances
-  hosts: services
-  sudo: no
-  tags:
-    - service
-    - update
-  tasks:
-  - name: download repo
-    git: repo=git@github.com:MarcusHoile/product-distribution.git
-         dest=product-distribution
-         accept_hostkey=yes
-         version=master
-
-  - name: update database config
-    copy: >
-      src=templates/product-distribution/database.yml
-      dest=product-distribution/config
-
-  - name: install dependencies
-    shell: cd product-distribution; bundle install
-    sudo: no
-
-- name: restart bunny
-  hosts: services
-  sudo: no
-  vars:
-    ruby_version: '2.1.4'
-  tags:
-    - restart
-  tasks:
-  - name: Kill the current bunny screen
-    command: screen -X -S livescoresListener quit
-    tags: update
-    when: new_droplet is not defined
-
-  - name: Create a new bunny session on a detached screen
-    tags: 
-      - service
-      - update
-    shell: RAILS_ENV={{ env | default('production') }} screen -d -m -S livescoresListener ruby lib/message_queue.rb -d
-    args:
-      chdir: "{{ release_path.stdout | default('product_distribution') }}"
-
-
-- name: restart delayed job
-  hosts: services
-  sudo: no
-  tags:
-    - service
-    - restart
-    - update
-  vars:
-    ruby_version: '2.1.4'
-  tasks:
-  - name: restart delayed job  
-    shell: RAILS_ENV={{ env | default('production') }} bin/delayed_job restart 
-    args:
-      chdir: "{{ release_path.stdout | default('product_distribution') }}"
 
 - name: Clean up releases keep to 5
   hosts: rails_web
@@ -378,7 +318,7 @@
   tasks:
   # get the amount of old releases 
   - name: get release count
-    shell: ls /var/www/product_distribution/releases | wc -l
+    shell: ls /var/www/planndit/releases | wc -l
     register: release_count
     changed_when: false
 
@@ -386,6 +326,6 @@
   - name: remove old releases
     sudo: yes
     when: release_count.stdout|int >= 5
-    shell: cutoff=`ls -t /var/www/product_distribution/releases/ | head -5 | tail -1`; find /var/www/product_distribution/releases -maxdepth 1 ! -newer /var/www/product_distribution/releases/$cutoff -exec rm -rf '{}' \;
+    shell: cutoff=`ls -t /var/www/planndit/releases/ | head -5 | tail -1`; find /var/www/planndit/releases -maxdepth 1 ! -newer /var/www/planndit/releases/$cutoff -exec rm -rf '{}' \;
     
 

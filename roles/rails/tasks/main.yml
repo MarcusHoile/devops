@@ -6,7 +6,7 @@
     owner=root
     group=root
     recurse=yes
-    path="/var/www/product_distribution/shared/log"
+    path="/var/www/planndit/shared/log"
 
 - name: Create pids directory
   file: >
@@ -14,14 +14,14 @@
     owner=root
     group=root
     recurse=yes
-    path="/var/www/product_distribution/shared/pids"
+    path="/var/www/planndit/shared/pids"
 
 - name: Get release timestamp
   command: date +%Y%m%d%H%M%S
   register: timestamp
 
 - name: Name release directory
-  command: echo "/var/www/product_distribution/releases/{{ timestamp.stdout }}"
+  command: echo "/var/www/planndit/releases/{{ timestamp.stdout }}"
   register: release_path
 
 - name: Create release directory
@@ -33,18 +33,18 @@
     path={{ release_path.stdout }}
 
 - name: checkout git repo into release directory
-  git: repo=git@github.com:MarcusHoile/product-distribution.git
+  git: repo=git@github.com:MarcusHoile/lets-get-tickets.git
        dest="{{ release_path.stdout }}"
        accept_hostkey=yes
        version=master
 
 - name: setup unicorn config
   sudo: yes
-  shell: "ln -nfs {{ release_path.stdout }}/config/nginx.conf /etc/nginx/sites-enabled/product_distribution"
+  shell: "ln -nfs {{ release_path.stdout }}/config/nginx.conf /etc/nginx/sites-enabled/planndit"
 
 - name: setup nginx config
   sudo: yes
-  shell: "ln -nfs {{ release_path.stdout }}/config/unicorn_init.sh /etc/init.d/unicorn_product_distribution"
+  shell: "ln -nfs {{ release_path.stdout }}/config/unicorn_init.sh /etc/init.d/unicorn_planndit"
 
 - name: delete default vhost
   sudo: yes
@@ -52,7 +52,7 @@
   when: new_app
 
 - name: insert env vars
-  copy: src=templates/product-distribution/secrets.yml dest="{{ release_path.stdout }}/config/secrets.yml"
+  copy: src=templates/planndit/secrets.yml dest="{{ release_path.stdout }}/config/secrets.yml"
 
 - name: restart nginx
   sudo: yes
@@ -61,7 +61,7 @@
 
 - name: update unicorn defaults
   sudo: yes
-  command: update-rc.d -f unicorn_product_distribution defaults
+  command: update-rc.d -f unicorn_planndit defaults
   when: new_app
 
 - name: Setup memcached
@@ -78,7 +78,7 @@
     owner=root
     group=root
     recurse=yes
-    path=/var/www/product_distribution/shared/config
+    path=/var/www/planndit/shared/config
 
 - name: create tmp in release directory
   file: >
@@ -90,7 +90,7 @@
 
 - name: update database config
   copy: >
-    src=templates/product-distribution/database.yml
+    src=templates/planndit/database.yml
     dest="{{ release_path.stdout }}/config"
 
 - name: link database config
@@ -98,7 +98,7 @@
   file: >
     state=link
     src="{{ release_path.stdout }}/config/database.yml"
-    path=/var/www/product_distribution/shared/config/database.yml
+    path=/var/www/planndit/shared/config/database.yml
 
 - name: link log directory
   sudo: no
@@ -106,7 +106,7 @@
     force=yes
     state=link
     path="{{ release_path.stdout }}/log"
-    src="/var/www/product_distribution/shared/log"
+    src="/var/www/planndit/shared/log"
     
 
 - name: link pids directory
@@ -114,7 +114,7 @@
   file: >
     state=link
     path="{{ release_path.stdout }}/pids"
-    src="/var/www/product_distribution/shared/pids"
+    src="/var/www/planndit/shared/pids"
     
 - name: install dependencies
   shell: cd {{ release_path.stdout }}; bundle install
@@ -131,13 +131,13 @@
 - name: Update app version
   file: >
     state=link
-    path=/var/www/product_distribution/current
+    path=/var/www/planndit/current
     src={{ release_path.stdout }}
 
 - name: restart unicorn
   tags: restart
   sudo: yes
-  shell: service unicorn_product_distribution restart
+  shell: service unicorn_planndit restart
 
 - name: restart nginx
   tags: restart
